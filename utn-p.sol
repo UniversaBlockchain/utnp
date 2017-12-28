@@ -21,14 +21,15 @@ import './zeppelin-solidity/contracts/token/ERC20.sol';
 //TokenVesting
 contract UTNP is BasicToken, BurnableToken, ERC20 {
 
-    string public name = "UTN-P: Universa Token";
-    string public symbol = "UTNP";
-    uint8 public decimals = 18;
+    string public constant name = "UTN-P: Universa Token";
+    string public constant symbol = "UTNP";
+    uint8 public constant decimals = 18;
+    string public constant version = "1.0";
 
-    uint256 INITIAL_SUPPLY_UTN = 4997891952;
+    uint256 constant INITIAL_SUPPLY_UTN = 4997891952;
 
-    mapping(address => bool) public burnerAddresses;
-    address public timeLockedAddress = 0xDf5963B72B2478E828Bc69693f1f47C2b2BB7948;
+    mapping(address => bool) public isBurner;
+    address public constant timeLockedAddress = 0xDf5963B72B2478E828Bc69693f1f47C2b2BB7948;
 
     /**
      * @dev Constructor that:
@@ -40,10 +41,10 @@ contract UTNP is BasicToken, BurnableToken, ERC20 {
         balances[msg.sender] = totalSupply;
 
         // Initialize the burners.
-        burnerAddresses[msg.sender] = true;
-        burnerAddresses[0xB5a7235d2D53aaDaEfe68c4477BdAF1A8046DEFC] = true;
-        burnerAddresses[0x5335266ef86655ac6764b98cD9FF1166EF542342] = true;
-        burnerAddresses[0xE1D2200354677D549782bA3eF0b782b203C1057a] = true;
+        isBurner[msg.sender] = true;
+        isBurner[0xB5a7235d2D53aaDaEfe68c4477BdAF1A8046DEFC] = true;
+        isBurner[0x5335266ef86655ac6764b98cD9FF1166EF542342] = true;
+        isBurner[0xE1D2200354677D549782bA3eF0b782b203C1057a] = true;
     }
 
     /**
@@ -72,11 +73,11 @@ contract UTNP is BasicToken, BurnableToken, ERC20 {
 
     /**
      * @dev Burns a specific amount of tokens.
-     * Only an address listed in `burnerAddresses` can do this.
+     * Only an address listed in `isBurner` can do this.
      * @param _value The amount of token to be burned.
      */
     function burn(uint256 _value) public {
-        require(burnerAddresses[msg.sender]);
+        require(isBurner[msg.sender]);
         super.burn(_value);
     }
 }
