@@ -7,7 +7,6 @@ import './zeppelin-solidity/contracts/token/SafeERC20.sol';
  * @dev A contract that can send multiple contracts to multiple addresses, at once.
  *
  * Based on OpenZeppelin framework. Uses the code of TokenTimelock as an example.
- *
  */
 contract BulkSender is Ownable {
     using SafeERC20 for ERC20Basic;
