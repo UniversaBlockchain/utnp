@@ -8,8 +8,7 @@
 out
 out/production/
 
-**/generated/*.bin
-**/generated/*.abi
+**/ethereum/contracts/generated/
 
 # Custom JetBrains-specific tweaks
 
