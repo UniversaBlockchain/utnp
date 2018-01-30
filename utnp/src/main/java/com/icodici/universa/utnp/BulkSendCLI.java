@@ -13,9 +13,20 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Command-line interface to BulkSender.
+ * <p>
+ * Alpha-version – requires overview of the executed transactions!
+ * <p>
+ * The web3j backend, in its current state, doesn’t provide stable non-problematic overview
+ * of whether the smart contract method call has been completed succcessfully!
+ */
 public class BulkSendCLI {
 
     public static BigDecimal DEFAULT_GAS_PRICE_GWEI = new BigDecimal("21");

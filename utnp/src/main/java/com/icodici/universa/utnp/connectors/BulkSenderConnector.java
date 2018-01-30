@@ -19,6 +19,11 @@ import java.util.stream.Collectors;
 
 /**
  * The class acting as a remote control to BulkSender Ethereum smart contract.
+ * <p>
+ * Alpha-version – use at your own risk!
+ * <p>
+ * The web3j backend, in its current state, doesn’t provide stable non-problematic overview
+ * of whether the smart contract method call has been completed succcessfully!
  */
 public class BulkSenderConnector extends AbstractConnector {
 
@@ -59,7 +64,6 @@ public class BulkSenderConnector extends AbstractConnector {
         contract = BulkSender.load(bulkSenderContractAddress, web3j, bulkSenderCredentials, gasPrice, gasLimit);
         assert contract != null;
     }
-
 
     /**
      * Send multiple transfers at once, using the BulkTransfer contract.

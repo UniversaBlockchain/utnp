@@ -1,9 +1,3 @@
-The reference contracts interfaces are taken from <https://github.com/ConsenSys/Tokens>.
-
-`StandardToken.sol` implements ERC20 interface.
-
-`HumanStandardToken.sol` implements the popular extension of this interface, with predefined token name, symbol and decimals.
-
 # Prerequirements
 
 To compile this, you need `solidity` and `web3j` command line tools installed.

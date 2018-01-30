@@ -12,14 +12,15 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 /**
  * The class acting as a remote control to UTNP Ethereum smart contract.
+ * <p>
+ * Alpha-version – use at your own risk!
+ * <p>
+ * The web3j backend, in its current state, doesn’t provide stable non-problematic overview
+ * of whether the smart contract method call has been completed succcessfully!
  */
 public class UTNPConnector extends AbstractConnector {
 
