@@ -35,7 +35,7 @@ public class UTNPConnector extends AbstractConnector {
      * @param utnpContractAddress the Ethereum address of the UTN-P ERC20 contract. Used for burn operations.
      * @param burnerPrivateKey    the private key that has the permission to burn UTN-P tokens.
      */
-    public UTNPConnector(AbstractConnector.@NonNull EthereumConnection connection,
+    public UTNPConnector(AbstractConnector.EthereumConnection connection,
                          @NonNull String utnpContractAddress,
                          @NonNull byte[] burnerPrivateKey,
                          @NonNull BigInteger gasPrice,
