@@ -59,10 +59,11 @@ public class BulkSendCLI {
                                  @NonNull final String erc20Address,
                                  @NonNull List<BulkSenderConnector.SingleTransfer> bulkRequests) {
         System.out.printf(" >>> Sending bulk %s\n", bulkRequests.size());
+
         final String txid = utnpConnector.bulkTransfer(
                 erc20Address, BulkSenderConnector.UTNP_DECIMALS, bulkRequests);
+        System.out.printf(" <<< Result transaction: %s\n", txid);
         System.out.printf(" <<< Done\n");
-//        System.out.printf(" <<< Result transaction: %s\n", txid);
     }
 
     private void executeTotalSend(@NonNull final String rpcUrl,
@@ -89,8 +90,8 @@ public class BulkSendCLI {
         System.out.printf("Next launch should use:\n    --skip %s \n", skipOrders + numberOrders);
 
         final List<BulkSenderConnector.SingleTransfer> requests = new LinkedList<>();
-
         final List<Map> objectToDoubleCheck = new LinkedList<>();
+        final HashMap<String, Integer> addressUsageCounts = new HashMap<>();
 
         long currentSkip = skipOrders;
 
@@ -108,7 +109,16 @@ public class BulkSendCLI {
             final JSONObject jo = (JSONObject) o;
             final String uuid = jo.getString("uuid");
             final BigDecimal utnp_amount = jo.getBigDecimal("utnp_amount");
-            final String address = jo.getString("utnp_address");
+            final String address = jo.getString("utnp_address").toLowerCase();
+
+            // Order data validations
+            {
+                if (!address.matches("^0x[0-9a-f]{40}$")) {
+                    System.out.printf("ERROR: address \"%s\" is invalid!\n", jo.getString("utnp_address"));
+                    System.exit(-1);
+                }
+                addressUsageCounts.merge(address, 1, Integer::sum);
+            }
 
             total = total.add(utnp_amount);
 
@@ -126,6 +136,22 @@ public class BulkSendCLI {
             currentSkip++;
         }
         System.out.printf("Total amount: %s\n", total);
+
+        // Overall validation
+        {
+            final Map<String, Integer> duplicatedAddressesWithCounts = addressUsageCounts.entrySet()
+                    .stream()
+                    .filter(e -> e.getValue() > 1)
+                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+
+            if (!duplicatedAddressesWithCounts.isEmpty()) {
+                System.out.printf("\nWARNING WARNING WARNING: %s suspicious duplicate entry/entries!\n", duplicatedAddressesWithCounts.size());
+                for (Map.Entry<String, Integer> entry : duplicatedAddressesWithCounts.entrySet()) {
+                    System.out.printf("  > %s : %s withdrawal(s)\n", entry.getKey(), entry.getValue());
+                }
+                System.out.println();
+            }
+        }
 
         final Map overallStructureToDoubleCheck = new HashMap() {{
             put("orders", objectToDoubleCheck);
@@ -154,7 +180,7 @@ public class BulkSendCLI {
                 bulkSenderAddress,
                 privateKey,
                 EthereumUtils.valueInWei(gasPrice),
-                BigInteger.valueOf(5000000));
+                BigInteger.valueOf(4500000));
 
         long left_in_bulk = BULK_SIZE;
         final List<BulkSenderConnector.SingleTransfer> bulk = new LinkedList<>();

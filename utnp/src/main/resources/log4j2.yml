@@ -13,21 +13,12 @@ Configuration:
       -
         name: org.web3j.protocol.http.HttpService
         level: error
-        additivity: false
-        AppenderRef:
-          ref: Console
       -
         name: io.netty
         level: error
-        additivity: false
-        AppenderRef:
-          ref: Console
       -
         name: com.icodici.universa
         level: trace
-        additivity: false
-        AppenderRef:
-          ref: Console
     Root:
       level: debug
       AppenderRef:
