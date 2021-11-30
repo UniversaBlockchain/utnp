@@ -9,12 +9,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECKeyPair;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tx.ChainId;
+import org.web3j.tx.RawTransactionManager;
+import org.web3j.tx.response.NoOpProcessor;
 
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +30,7 @@ public class BulkSenderConnector extends AbstractConnector {
 
     private static final Logger logger = LogManager.getLogger(BulkSenderConnector.class);
 
+    private final RawTransactionManager txManager;
     private final BulkSender contract;
 
 
@@ -60,8 +62,10 @@ public class BulkSenderConnector extends AbstractConnector {
 
         final String operatorAddress = bulkSenderCredentials.getAddress();
         logger.debug("Operating from {}", operatorAddress);
+        logger.debug("Bulk sender: {}", bulkSenderContractAddress);
 
-        contract = BulkSender.load(bulkSenderContractAddress, web3j, bulkSenderCredentials, gasPrice, gasLimit);
+        txManager = new RawTransactionManager(web3j, bulkSenderCredentials, ChainId.MAINNET, new NoOpProcessor(web3j));
+        contract = BulkSender.load(bulkSenderContractAddress, web3j, txManager, gasPrice, gasLimit);
         assert contract != null;
     }
 
@@ -93,21 +97,12 @@ public class BulkSenderConnector extends AbstractConnector {
 
         assert addresses.size() == amounts.size() : String.format("%s vs %s", addresses.size(), amounts.size());
 
-        final TransactionReceipt transactionReceipt;
         try {
-            final CompletableFuture<TransactionReceipt> future = contract.bulkTransfer(contractAddressToTransfer, addresses, amounts).sendAsync();
-            transactionReceipt = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-//            logger.error("Problem on bulkTransfer", e);
+            return contract.bulkTransfer(contractAddressToTransfer, addresses, amounts).send().getTransactionHash();
+        } catch (Exception e) {
+            logger.error("Problem on bulkTransfer in noop send", e);
             logger.error("Bulk transfer cannot get the receipt yet");
             return null;
-        }
-
-        if (transactionReceipt == null) {
-            return null;
-        } else {
-            logger.error("Problem on bulkTransfer/getTransactionHash");
-            return transactionReceipt.getTransactionHash();
         }
     }
 
